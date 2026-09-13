@@ -15,7 +15,7 @@ export default function Search() {
 
   return (
     <div className={styles.search}>
-      <input
+        <input aria-label="Search by title, author, or genre"
         type="text"
         placeholder="Search by title, author, or genre"
         value={query}
