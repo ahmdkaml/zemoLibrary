@@ -1,0 +1,19 @@
+.detail {
+  display: flex;
+  gap: 2rem;
+}
+
+.cover {
+  width: 240px;
+  border-radius: 8px;
+}
+
+.author {
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.description {
+  margin: 1rem 0;
+  max-width: 500px;
+}

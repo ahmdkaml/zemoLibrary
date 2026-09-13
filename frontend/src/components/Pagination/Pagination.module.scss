@@ -1,0 +1,18 @@
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  button {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
