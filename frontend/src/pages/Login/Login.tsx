@@ -1,6 +1,5 @@
 import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login, signup } from '../../services/authService';
 import styles from './Login.module.scss';
 
 type Mode = 'signin' | 'signup';
@@ -28,9 +27,9 @@ export default function Login() {
         setError('Passwords do not match.');
         return;
       }
-      await signup(name, email, password);
+      // await signup(name, email, password);
     } else {
-      await login(email, password);
+      // await login(email, password);
     }
 
     navigate('/profile');
