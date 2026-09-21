@@ -1,6 +1,6 @@
 param (
     [string]$JdkPath = "C:\Program Files\Eclipse Adoptium\jdk-21.0.9.10-hotspot",
-    [string]$AppName = "zemoLibraryServer"
+    [string]$AppName = "ZemoServer"
 )
 
 $ErrorActionPreference = "Stop"
