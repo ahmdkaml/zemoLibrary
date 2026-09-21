@@ -1,0 +1,9 @@
+# Internal agent guide
+agen-guide.md
+
+# Build output & executables
+dist/
+*.exe
+
+# Database files
+data/

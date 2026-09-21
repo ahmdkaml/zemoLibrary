@@ -33,4 +33,7 @@ jobs:
         run: chmod +x mvnw
 
       - name: Run backend tests
-        run: ./mvnw -q clean test
+        run: ./mvnw clean test
+
+      - name: Build backend package
+        run: ./mvnw clean package -DskipTests
