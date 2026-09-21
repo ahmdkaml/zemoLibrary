@@ -1,6 +1,11 @@
 # Internal agent guide
 agen-guide.md
 
+# Environment and secrets
+.env
+.env.*
+*.env
+
 # Build output & executables
 dist/
 *.exe
