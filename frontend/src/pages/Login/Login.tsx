@@ -32,7 +32,7 @@ export default function Login() {
           setLoading(false);
           return;
         }
-        const res = await apiFetch('/api/auth/signup', {
+        const res = await apiFetch('/auth/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email, password }),
@@ -44,7 +44,7 @@ export default function Login() {
           return;
         }
       } else {
-        const res = await apiFetch('/api/auth/login', {
+        const res = await apiFetch('/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),

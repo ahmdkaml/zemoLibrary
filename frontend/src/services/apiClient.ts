@@ -29,7 +29,7 @@ export async function pingServer(timeoutMs = 3500): Promise<boolean> {
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/auth/status`, {
+    const res = await fetch(`${API_BASE_URL}/auth/status`, {
       method: 'GET',
       signal: controller.signal,
     });
