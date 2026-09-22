@@ -1,9 +1,14 @@
 import { FormEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.scss';
 import { apiFetch } from '../../services/apiClient';
 
 type Mode = 'signin' | 'signup';
+
+interface LoggedInUser {
+  id: number;
+  name?: string;
+  email: string;
+}
 
 export default function Login() {
   const [mode, setMode] = useState<Mode>('signin');
@@ -13,7 +18,8 @@ export default function Login() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [loggedInUser, setLoggedInUser] = useState<LoggedInUser | null>(null);
+  const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null);
 
   function toggleMode() {
     setMode((m) => (m === 'signin' ? 'signup' : 'signin'));
@@ -43,6 +49,8 @@ export default function Login() {
           setLoading(false);
           return;
         }
+        setLoggedInUser(data.user);
+        setWelcomeMessage(`Welcome to ZemoLibrary, ${data.user?.name || data.user?.email}!`);
       } else {
         const res = await apiFetch('/auth/login', {
           method: 'POST',
@@ -55,15 +63,41 @@ export default function Login() {
           setLoading(false);
           return;
         }
+        setLoggedInUser(data.user);
+        setWelcomeMessage(`Welcome back, ${data.user?.name || data.user?.email}!`);
       }
-
-      navigate('/');
     } catch {
       // apiFetch automatically triggers server-down navigation on network fault
       setError('Unable to reach server.');
     } finally {
       setLoading(false);
     }
+  }
+
+  if (loggedInUser && welcomeMessage) {
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.welcomeCard}>
+          <div className={styles.successBadge}>✓</div>
+          <h2>{welcomeMessage}</h2>
+          <p className={styles.userInfo}>
+            Logged in as <strong>{loggedInUser.email}</strong>
+          </p>
+          <button
+            type="button"
+            className={styles.signOutButton}
+            onClick={() => {
+              setLoggedInUser(null);
+              setWelcomeMessage(null);
+              setPassword('');
+              setConfirmPassword('');
+            }}
+          >
+            Sign Out / Switch Account
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (

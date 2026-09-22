@@ -186,6 +186,50 @@ static unsigned __stdcall handle_client(void *param) {
         return 0;
     }
 
+    // Route: GET /users or GET /users?name=...
+    if (strcmp(method, "GET") == 0 &&
+        (strcmp(path, "/users") == 0 || strncmp(path, "/users?", 7) == 0)) {
+        char search_name[128] = {0};
+        char *q = strstr(path, "name=");
+        if (q) {
+            strncpy(search_name, q + 5, sizeof(search_name) - 1);
+            for (int i = 0; search_name[i]; i++) {
+                if (search_name[i] == '+') search_name[i] = ' ';
+            }
+        }
+
+        EnterCriticalSection(&db_cs);
+        sqlite3_stmt *stmt = NULL;
+        if (strlen(search_name) > 0) {
+            sqlite3_prepare_v2(db, "SELECT id, name, email FROM users WHERE name LIKE ? COLLATE NOCASE;", -1, &stmt, NULL);
+            char like_pattern[140];
+            snprintf(like_pattern, sizeof(like_pattern), "%%%s%%", search_name);
+            sqlite3_bind_text(stmt, 1, like_pattern, -1, SQLITE_TRANSIENT);
+        } else {
+            sqlite3_prepare_v2(db, "SELECT id, name, email FROM users;", -1, &stmt, NULL);
+        }
+
+        char resp[8192] = "[\n";
+        int first = 1;
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+            long long id = sqlite3_column_int64(stmt, 0);
+            const char *n = (const char*)sqlite3_column_text(stmt, 1);
+            const char *e = (const char*)sqlite3_column_text(stmt, 2);
+            char item[512];
+            snprintf(item, sizeof(item), "%s  {\"id\":%lld,\"name\":\"%s\",\"email\":\"%s\"}",
+                first ? "" : ",\n", id, n ? n : "", e ? e : "");
+            first = 0;
+            strncat(resp, item, sizeof(resp) - strlen(resp) - 1);
+        }
+        strncat(resp, "\n]\n", sizeof(resp) - strlen(resp) - 1);
+        sqlite3_finalize(stmt);
+        LeaveCriticalSection(&db_cs);
+
+        send_response(sock, 200, "OK", "application/json", resp);
+        closesocket(sock);
+        return 0;
+    }
+
     // Extract body for POST requests
     char *body = strstr(buf, "\r\n\r\n");
     if (body) body += 4;
