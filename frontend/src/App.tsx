@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Login from './pages/Login/Login';
+import Welcome from './pages/Welcome/Welcome';
 import ErrorPage from './pages/ErrorPage/ErrorPage';
 import { pingServer, registerServerDownHandler } from './services/apiClient';
 
@@ -33,7 +34,10 @@ export default function App() {
       <Route path="/403" element={<ErrorPage kind="not-authorized" />} />
       <Route path="/422" element={<ErrorPage kind="file-corrupted" />} />
       <Route path="/404" element={<ErrorPage kind="not-found" />} />
-      <Route path="*" element={<Login />} />
+      <Route path="/welcome" element={<Welcome />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Welcome />} />
+      <Route path="*" element={<ErrorPage kind="not-found" />} />
     </Routes>
   );
 }

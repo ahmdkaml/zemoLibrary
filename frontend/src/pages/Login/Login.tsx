@@ -1,14 +1,9 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.scss';
 import { apiFetch } from '../../services/apiClient';
 
 type Mode = 'signin' | 'signup';
-
-interface LoggedInUser {
-  id: number;
-  name?: string;
-  email: string;
-}
 
 export default function Login() {
   const [mode, setMode] = useState<Mode>('signin');
@@ -18,8 +13,22 @@ export default function Login() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState<LoggedInUser | null>(null);
-  const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // If user is already authenticated, redirect to Welcome page
+    const stored = localStorage.getItem('zemo_user');
+    if (stored) {
+      try {
+        const u = JSON.parse(stored);
+        if (u && u.id) {
+          navigate('/welcome', { replace: true });
+        }
+      } catch {
+        localStorage.removeItem('zemo_user');
+      }
+    }
+  }, [navigate]);
 
   function toggleMode() {
     setMode((m) => (m === 'signin' ? 'signup' : 'signin'));
@@ -49,8 +58,9 @@ export default function Login() {
           setLoading(false);
           return;
         }
-        setLoggedInUser(data.user);
-        setWelcomeMessage(`Welcome to ZemoLibrary, ${data.user?.name || data.user?.email}!`);
+        // Save session and redirect to Welcome page
+        localStorage.setItem('zemo_user', JSON.stringify(data.user));
+        navigate('/welcome', { replace: true });
       } else {
         const res = await apiFetch('/auth/login', {
           method: 'POST',
@@ -63,8 +73,9 @@ export default function Login() {
           setLoading(false);
           return;
         }
-        setLoggedInUser(data.user);
-        setWelcomeMessage(`Welcome back, ${data.user?.name || data.user?.email}!`);
+        // Save session and redirect to Welcome page
+        localStorage.setItem('zemo_user', JSON.stringify(data.user));
+        navigate('/welcome', { replace: true });
       }
     } catch {
       // apiFetch automatically triggers server-down navigation on network fault
@@ -72,32 +83,6 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
-  }
-
-  if (loggedInUser && welcomeMessage) {
-    return (
-      <div className={styles.wrapper}>
-        <div className={styles.welcomeCard}>
-          <div className={styles.successBadge}>✓</div>
-          <h2>{welcomeMessage}</h2>
-          <p className={styles.userInfo}>
-            Logged in as <strong>{loggedInUser.email}</strong>
-          </p>
-          <button
-            type="button"
-            className={styles.signOutButton}
-            onClick={() => {
-              setLoggedInUser(null);
-              setWelcomeMessage(null);
-              setPassword('');
-              setConfirmPassword('');
-            }}
-          >
-            Sign Out / Switch Account
-          </button>
-        </div>
-      </div>
-    );
   }
 
   return (
