@@ -4,10 +4,10 @@ import styles from './Navbar.module.scss';
 
 const LINKS = [
   { to: '/', label: 'Home' },
-  { to: '/catalog', label: 'Catalog' },
-  { to: '/search', label: 'Search' },
+  //{ to: '/catalog', label: 'Catalog' },
+  //{ to: '/search', label: 'Search' },
   { to: '/login', label: 'Login' },
-  { to: '/profile', label: 'Profile' }
+  //{ to: '/profile', label: 'Profile' }
 ];
 
 export default function Navbar() {

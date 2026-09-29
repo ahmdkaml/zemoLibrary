@@ -14,7 +14,7 @@ A temporary preview of the frontend is available at:
 
 ## Tech Stack
 
-* Angular
+* React
 * Spring Boot
 * Maven
 * GitHub Actions
